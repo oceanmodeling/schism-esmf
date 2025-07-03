@@ -391,7 +391,6 @@ subroutine InitializeAdvertise(comp, importState, exportState, clock, rc)
   call NUOPC_FieldDictionaryAddIfNeeded("mixed_layer_depth", "1", localrc)
   _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
 
-
   !================================================================================
   !                      +-------------------------------+
   !                      |  Adding CICE fields to ufs_fd |
@@ -446,7 +445,6 @@ subroutine InitializeAdvertise(comp, importState, exportState, clock, rc)
   call NUOPC_FieldDictionaryAddIfNeeded("Si_CdnIO", "1", localrc)
   _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
 
-  
   !================================================================================
   !                               +------------------------+
   !                               | Advertizing CICE states|
@@ -494,7 +492,6 @@ subroutine InitializeAdvertise(comp, importState, exportState, clock, rc)
   !  ice thickness potential  -------------------------\ 
   call NUOPC_Advertise(importState, "Si_hi", rc=localrc)
  
-
   ! for coupling to ATM/DATM
   call NUOPC_Advertise(importState, "air_pressure_at_sea_level", rc=localrc)
   call NUOPC_Advertise(importState, "inst_zonal_wind_height10m", rc=localrc)
@@ -558,7 +555,7 @@ subroutine InitializeAdvertise(comp, importState, exportState, clock, rc)
   _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
 
   call NUOPC_FieldAdvertise(exportState, "depth-averaged_y-velocity", "m s-1", localrc)
-  _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc) 
+  _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
 
   call NUOPC_FieldAdvertise(exportState, "sea_surface_height_above_sea_level", "m", localrc)
   _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
@@ -628,6 +625,12 @@ subroutine InitializeRealize(comp, importState, exportState, clock, rc)
   rc = ESMF_SUCCESS
   localrc= ESMF_SUCCESS
 
+!<<<<<<< HEAD
+ !=======
+   !> @todo move addSchismMesh back to schism_esmf_util to share with ESMF cap
+   !> call addSchismMesh(comp, ownedNodes=ownedNodes, foreignNodes=foreignNodes, rc=localrc)
+   !call addSchismMesh(comp, localrc)
+ !>>>>>>> a9a0ce0 (Use MeshCreate instead off add Mesh)
   if (meshloc == ESMF_MESHLOC_NODE) then
     call SCHISM_MeshCreateNode(comp, rc=localrc)
     _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
@@ -1150,7 +1153,7 @@ end subroutine SCHISM_RemoveUnconnectedFields
 #define ESMF_METHOD "SCHISM_Export"
 subroutine SCHISM_Export(comp, exportState, clock, rc)
 
-  use schism_glbl,      only: nvrt, eta2, dav, uu2, vv2, tr_nd, idry_e, deta1_dxy_elem, dp, znl, nvrt, npa
+  use schism_glbl,      only: nvrt, eta2, dav, uu2, vv2, tr_nd, idry_e, npa, deta1_dxy_elem, dp, znl, nvrt,
   use schism_esmf_util, only: SCHISM_StateUpdate
 
   implicit none
@@ -1190,7 +1193,7 @@ subroutine SCHISM_Export(comp, exportState, clock, rc)
   call SCHISM_StateUpdate(exportState, 'sea_surface_height_above_sea_level', eta2, &
     isPtr=isDataPtr, rc=localrc)
   _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
- 
+
   !> Sea surface graidend (for cice coupling) 
   call SCHISM_StateUpdate(exportState, 'sea_surface_slope_zonal', deta1_dxy_elem(:,1), &
     isPtr=isDataPtr, rc=localrc)
@@ -1295,24 +1298,6 @@ subroutine SCHISM_Import(comp, importState, clock, rc)
   type(ESMF_State)   , intent(inout) :: importState
   type(ESMF_Clock)   , intent(in)    :: clock
   integer            , intent(inout) :: rc
-  !>---------------------------------------------------
-  !         Creating vars to dump cice fields to
-  !>---------------------------------------------------
-  !real(ESMF_KIND_R8), allocatable, save, target :: uvice(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: vvice(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: taux(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: tauy(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: vsno(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: vice(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: aice(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: ifresh_flux(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: isalt_flux(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: iheat_flux(:)  
-  !real(ESMF_KIND_R8), allocatable, save, target :: isw_pen(:)
-  !real(ESMF_KIND_R8), allocatable, save, target :: frzmlt(:)
-
-  !>---------------------------------------------------
-  !>---------------------------------------------------
   
   !> Local variables
   type(ESMF_Time) :: currTime
@@ -1557,6 +1542,7 @@ subroutine SCHISM_Import(comp, importState, clock, rc)
       srad_th_ice(i)  = isw_pen(i)
 
     else
+
       !> No ice so all these values are zero
       tau_oi(1,i)      = real(0)
       tau_oi(2,i)      = real(0)
@@ -1564,11 +1550,9 @@ subroutine SCHISM_Import(comp, importState, clock, rc)
       fresh_wa_flux(i) = real(0) !+ max(real(0.0),frzmlt(i))
       net_heat_flux(i) = real(0)
       srad_th_ice(i)  = real(0)
+    
     endif
-
   enddo
-
-
 
   !> Write fields on import state for debugging
   if (debug_level > 0) then
