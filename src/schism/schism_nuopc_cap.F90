@@ -626,11 +626,11 @@ subroutine InitializeRealize(comp, importState, exportState, clock, rc)
   localrc= ESMF_SUCCESS
 
 !<<<<<<< HEAD
- !=======
-   !> @todo move addSchismMesh back to schism_esmf_util to share with ESMF cap
-   !> call addSchismMesh(comp, ownedNodes=ownedNodes, foreignNodes=foreignNodes, rc=localrc)
-   !call addSchismMesh(comp, localrc)
- !>>>>>>> a9a0ce0 (Use MeshCreate instead off add Mesh)
+!=======
+  !> @todo move addSchismMesh back to schism_esmf_util to share with ESMF cap
+  !> call addSchismMesh(comp, ownedNodes=ownedNodes, foreignNodes=foreignNodes, rc=localrc)
+  !call addSchismMesh(comp, localrc)
+!>>>>>>> a9a0ce0 (Use MeshCreate instead off add Mesh)
   if (meshloc == ESMF_MESHLOC_NODE) then
     call SCHISM_MeshCreateNode(comp, rc=localrc)
     _SCHISM_LOG_AND_FINALIZE_ON_ERROR_(rc)
