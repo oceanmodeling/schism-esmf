@@ -1153,7 +1153,7 @@ end subroutine SCHISM_RemoveUnconnectedFields
 #define ESMF_METHOD "SCHISM_Export"
 subroutine SCHISM_Export(comp, exportState, clock, rc)
 
-  use schism_glbl,      only: nvrt, eta2, dav, uu2, vv2, tr_nd, idry_e, npa, deta1_dxy_elem, dp, znl, nvrt,
+  use schism_glbl,      only: nvrt, eta2, dav, uu2, vv2, tr_nd, idry_e, npa, deta1_dxy_elem, dp, znl, nvrt
   use schism_esmf_util, only: SCHISM_StateUpdate
 
   implicit none
